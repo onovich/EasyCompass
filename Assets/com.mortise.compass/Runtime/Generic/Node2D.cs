@@ -31,10 +31,6 @@ namespace MortiseFrame.Compass {
         public Node2D Parent => parent;
         public void SetParent(Node2D value) => parent = value;
 
-        bool walkable;
-        public bool Walkable => walkable;
-        public void SetWalkable(bool value) => walkable = value;
-
         int capacity;
         public int Capacity => capacity;
         public void SetCapacity(int value) => capacity = value;
@@ -48,28 +44,18 @@ namespace MortiseFrame.Compass {
             return 0;
         }
 
-        public Node2D(int x, int y, bool walkable) {
+        public Node2D(int x, int y, int capacity) {
             this.x = x;
             this.y = y;
-            this.walkable = walkable;
+            this.capacity = capacity;
         }
 
-        public Vector2 GetPos(int mpu, Vector2 localOffset, Vector2 cellSize) {
-
-            var posX = x / (float)mpu + localOffset.x + cellSize.x / 2;
-            var posY = y / (float)mpu + localOffset.y + cellSize.y / 2;
-
-            return new Vector2(posX, posY);
-
+        public Vector2 GetPos() {
+            return new Vector2(x, y);
         }
 
-        public Vector3 GetPos3D(int mpu, Vector2 localOffset, Vector2 cellSize) {
-
-            var posX = x / (float)mpu + localOffset.x + cellSize.x / 2;
-            var posY = y / (float)mpu + localOffset.y + cellSize.y / 2;
-            var posZ = 0;
-            return new Vector3(posX, posY, posZ);
-
+        public Vector3 GetPos3D(Vector2 cellSize) {
+            return new Vector3(x, y, 0);
         }
 
         public void Clear() {
@@ -79,7 +65,6 @@ namespace MortiseFrame.Compass {
             x = 0;
             y = 0;
             capacity = 0;
-            walkable = false;
             parent = null;
         }
 

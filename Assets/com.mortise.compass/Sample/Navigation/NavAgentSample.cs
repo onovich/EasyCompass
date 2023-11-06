@@ -25,9 +25,9 @@ namespace MortiseFrame.Compass.Sample {
         public Node2DPool Node2DPool => node2DPool;
         public void SetNode2DPool(Node2DPool value) => node2DPool = value;
 
-        List<Node2D> path;
-        public List<Node2D> Path => path;
-        public void SetPath(List<Node2D> value) => path = value;
+        List<Vector2> path;
+        public List<Vector2> Path => path;
+        public void SetPath(List<Vector2> value) => path = value;
 
         int currentPathIndex = 0;
         public int CurrentPathIndex => currentPathIndex;
@@ -42,9 +42,7 @@ namespace MortiseFrame.Compass.Sample {
         void Update() {
 
             var pos = transform.position;
-            var localOffset = compass.LocalOffset;
-            var mpu = compass.Mpu;
-            this.indexPos = MathUtil.Pos2Index(pos, mpu, localOffset, map);
+            this.indexPos = MathUtil.Pos2Index(pos, map);
 
         }
 

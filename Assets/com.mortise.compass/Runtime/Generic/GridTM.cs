@@ -16,7 +16,6 @@ namespace MortiseFrame.Compass {
         public int countY;
         public Vector2 cellSize;
         public Vector2 stageOffset;
-        public int MPU;
 
         public bool GetWalkableValueWithIndex(Vector2Int index) {
             var x = index.x;

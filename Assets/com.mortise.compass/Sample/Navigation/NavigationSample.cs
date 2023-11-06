@@ -25,6 +25,13 @@ namespace MortiseFrame.Compass.Sample {
         Compass2D compass;
         bool isInit;
 
+        public int GetCapacityValue(Vector2Int index) {
+            var x = index.x;
+            var y = index.y;
+            var i = x + y * model.width;
+            return model.capacity[x + y * model.width];
+        }
+
         void Awake() {
 
             isInit = true;
@@ -33,22 +40,21 @@ namespace MortiseFrame.Compass.Sample {
             // InitAgent(agent_02);
             // InitAgent(agent_03);
 
-            map = new Map2D(model.tm.CellCount.x, model.tm.CellCount.y, 1000, out var node2DPool, model.tm.GetPassableValue, model.tm.GetCapacityValue);
-            compass = new Compass2D(model.tm.MPU, node2DPool, model.tm.LocalOffset, HeuristicType.Euclidean);
+            map = new Map2D(model.width, model.capacity.Length / model.width, 1000, out var node2DPool, GetCapacityValue);
+            compass = new Compass2D(node2DPool, HeuristicType.Euclidean);
 
             var startPos = agent_01.transform.position;
             var endPos = agent_01.Target.position;
-            var agentRealSize = agentSize * model.tm.MPU;
-            var startNode = MathUtil.Pos2Node(startPos, model.tm.MPU, model.tm.LocalOffset, map);
-            var endNode = MathUtil.Pos2Node(endPos, model.tm.MPU, model.tm.LocalOffset, map);
+            var startNode = MathUtil.Pos2Node(startPos, map);
+            var endNode = MathUtil.Pos2Node(endPos, map);
 
             Debug.Log($"startNode.X:{startNode.X}, startNode.Y:{startNode.Y};  endNode.X:{endNode.X}, endNode.Y:{endNode.Y}");
 
         }
 
         void InitAgent(NavAgentSample agent) {
-            var map = new Map2D(model.tm.CellCount.x, model.tm.CellCount.y, 1000, out var node2DPool, model.tm.GetPassableValue, model.tm.GetCapacityValue);
-            var compass = new Compass2D(model.tm.MPU, node2DPool, model.tm.LocalOffset, HeuristicType.Euclidean);
+            map = new Map2D(model.width, model.capacity.Length / model.width, 1000, out var node2DPool, GetCapacityValue);
+            var compass = new Compass2D(node2DPool, HeuristicType.Euclidean);
             agent.SetCompass(compass);
             agent.SetMap(map);
         }
@@ -68,8 +74,7 @@ namespace MortiseFrame.Compass.Sample {
 
             {
                 var startPos = agent.transform.position;
-                var agentRealSize = agentSize * model.tm.MPU;
-                var path = agent.Compass.FindPath(agent.Map, startPos, endPos, agentRealSize);
+                var path = agent.Compass.FindPath(agent.Map, startPos, endPos, agentSize);
                 agent.SetPath(path);
             }
 
@@ -80,12 +85,12 @@ namespace MortiseFrame.Compass.Sample {
             }
 
             var currentPos = agent.transform.position;
-            var cellSize = new Vector2(1 / model.tm.MPU, 1 / model.tm.MPU);
-            var nextPos = agent.Path[agent.CurrentPathIndex].GetPos(model.tm.MPU, model.tm.LocalOffset, cellSize);
+            var cellSize = new Vector2(1, 1);
+            var nextPos = agent.Path[agent.CurrentPathIndex];
             float step = speed * Time.fixedDeltaTime;
 
-            var currentIndex = MathUtil.Pos2Index(currentPos, model.tm.MPU, model.tm.LocalOffset, agent.Map);
-            var nextIndex = MathUtil.Pos2Index(nextPos, model.tm.MPU, model.tm.LocalOffset, agent.Map);
+            var currentIndex = MathUtil.Pos2Index(currentPos, agent.Map);
+            var nextIndex = MathUtil.Pos2Index(nextPos, agent.Map);
 
             var dir = new Vector2(nextPos.x - currentPos.x, nextPos.y - currentPos.y).normalized;
             agent.transform.position = AddVector2ToPos(dir * step, currentPos);
@@ -105,13 +110,12 @@ namespace MortiseFrame.Compass.Sample {
 
             var startPos = agent_01.transform.position;
             var endPos = agent_01.Target.position;
-            var agentRealSize = agentSize * model.tm.MPU;
-            var startNode = MathUtil.Pos2Node(startPos, model.tm.MPU, model.tm.LocalOffset, map);
-            var endNode = MathUtil.Pos2Node(endPos, model.tm.MPU, model.tm.LocalOffset, map);
-            var cellSize = new Vector2(1 / model.tm.MPU, 1 / model.tm.MPU);
+            var startNode = MathUtil.Pos2Node(startPos, map);
+            var endNode = MathUtil.Pos2Node(endPos, map);
+            var cellSize = new Vector2(1, 1);
 
-            var start = startNode.GetPos(model.tm.MPU, model.tm.LocalOffset, cellSize);
-            var end = endNode.GetPos(model.tm.MPU, model.tm.LocalOffset, cellSize);
+            var start = startNode.GetPos();
+            var end = endNode.GetPos();
 
             shadow_agent.position = start;
             shadow_end.position = end;
@@ -131,24 +135,19 @@ namespace MortiseFrame.Compass.Sample {
                 return;
             }
 
-            for (int i = 0; i < model.tm.CellCount.x; i++) {
-                for (int j = 0; j < model.tm.CellCount.y; j++) {
-                    var cellSize = new Vector2(1 / model.tm.MPU, 1 / model.tm.MPU);
-                    var pos = map.Nodes[i, j].GetPos(model.tm.MPU, model.tm.LocalOffset, cellSize);
-                    var index = new Vector2Int(i, j);
-                    Gizmos.color = Color.green;
-                    if (!model.tm.GetPassableValue(index)) {
-                        Gizmos.color = Color.red;
-                    }
-                    Gizmos.DrawWireCube(pos, Vector2.one * model.tm.MPU);
-                }
+            for (int i = 0; i < model.capacity.Length; i++) {
+                var cellSize = new Vector2(1, 1);
+                var pos = map.Nodes[i % model.width, i / model.width].GetPos();
+                var index = new Vector2Int(i & model.width, i / model.width);
+                Gizmos.color = Color.green;
+                Gizmos.DrawWireCube(pos, Vector2.one);
             }
 
-            var path = compass.FindPath(map, agent_01.transform.position, agent_01.Target.position, agentSize * model.tm.MPU);
+            var path = compass.FindPath(map, agent_01.transform.position, agent_01.Target.position, agentSize);
             for (int i = 1; i < path.Count; i++) {
                 var current = path[i];
                 var last = path[i - 1];
-                Gizmos.DrawLine(current.GetPos(model.tm.MPU, model.tm.LocalOffset, new Vector2(1 / model.tm.MPU, 1 / model.tm.MPU)), last.GetPos(model.tm.MPU, model.tm.LocalOffset, new Vector2(1 / model.tm.MPU, 1 / model.tm.MPU)));
+                Gizmos.DrawLine(current, last);
             }
 
         }

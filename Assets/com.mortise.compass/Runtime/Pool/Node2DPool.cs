@@ -13,16 +13,16 @@ namespace MortiseFrame.Compass {
             pool = new Stack<Node2D>(capacity);
         }
 
-        public Node2D GetNode(int x, int y, bool walkable) {
+        public Node2D GetNode(int x, int y, int capacity) {
             if (pool.Count > 0) {
                 var node = pool.Pop();
                 node.Clear();
                 node.SetX(x);
                 node.SetY(y);
-                node.SetWalkable(walkable);
+                node.SetCapacity(capacity);
                 return node;
             }
-            return new Node2D(x, y, walkable);
+            return new Node2D(x, y, capacity);
         }
 
         public void ReturnNode(Node2D node) {

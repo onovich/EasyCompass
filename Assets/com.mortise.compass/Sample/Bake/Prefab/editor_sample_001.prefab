@@ -132,12 +132,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   model: {fileID: 11400000, guid: 4b97ffd210733ae4989e4c5babe2f88c, type: 2}
   UnitCount: {x: 6, y: 6}
-  MPU: 1
   calculateCapacity: 1
   maxCapacity: 10
+  showLargeGrid: 1
   showGrid: 1
   showObstacle: 1
   showCapacity: 1
+  showRealCapacity: 1
+  largeGridColor: {r: 1, g: 0.5, b: 0, a: 0.1}
+  gridColor: {r: 1, g: 1, b: 1, a: 0.02}
+  obstacleColor: {r: 1, g: 0, b: 0, a: 1}
+  capacityColor: {r: 1, g: 1, b: 1, a: 1}
+  realCapacityColor: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1 &7393756275349391427
 GameObject:
   m_ObjectHideFlags: 0

@@ -11,10 +11,6 @@ namespace MortiseFrame.Compass {
         readonly int[] dx = { -1, 1, 0, 0, -1, -1, 1, 1 };
         readonly int[] dy = { 0, 0, -1, 1, -1, 1, -1, 1 };
         readonly int[] cost = { 10, 10, 10, 10, 14, 14, 14, 14 };
-        readonly int mpu;
-        public int Mpu => mpu;
-        readonly Vector2 localOffset;
-        public Vector2 LocalOffset => localOffset;
         readonly Node2DPool nodePool;
 
         // 回调
@@ -23,21 +19,17 @@ namespace MortiseFrame.Compass {
         // 启发式函数
         readonly Func<Node2D, Node2D, float> heuristicFunc;
 
-        public Compass2D(int mpu, Node2DPool nodePool, Vector2 localOffset, HeuristicType type = HeuristicType.Euclidean) {
-            this.mpu = mpu;
-            this.localOffset = localOffset;
+        public Compass2D(Node2DPool nodePool, HeuristicType type = HeuristicType.Euclidean) {
             this.heuristicFunc = HeuristicUtil.GetHeuristic(type);
             this.nodePool = nodePool;
         }
 
-        public List<Node2D> FindPath(Map2D map, Vector2 startPos, Vector2 endPos, float agentsize) {
+        public List<Vector2> FindPath(Map2D map, Vector2 startPos, Vector2 endPos, float agentsize) {
             openList.Clear();
             closedList.Clear();
 
-            var end = MathUtil.Pos2Node(endPos, mpu, localOffset, map);
-            var start = MathUtil.Pos2Node(startPos, mpu, localOffset, map);
-
-            var agentRealSize = agentsize * mpu;
+            var end = MathUtil.Pos2Node(endPos, map);
+            var start = MathUtil.Pos2Node(startPos, map);
 
             if (start == null || end == null) {
                 Debug.LogError($"start or end is null: {startPos}, {endPos}");
@@ -84,7 +76,7 @@ namespace MortiseFrame.Compass {
                     if (i >= 4) { // i >= 4 表示现在是对角线移动
                         var neighbour1 = map.Nodes[currentNode.X + dx[i], currentNode.Y];
                         var neighbour2 = map.Nodes[currentNode.X, currentNode.Y + dy[i]];
-                        if (neighbour1.Capacity < agentRealSize || neighbour2.Capacity < agentRealSize || !neighbour1.Walkable || !neighbour2.Walkable) {
+                        if (neighbour1.Capacity < agentsize || neighbour2.Capacity < agentsize) {
                             continue;
                         }
                     }
@@ -96,7 +88,7 @@ namespace MortiseFrame.Compass {
                         closestNodeToTarget = neighbour;
                     }
 
-                    if (closedList.Contains(neighbour) || neighbour.Capacity < agentRealSize || !neighbour.Walkable) {
+                    if (closedList.Contains(neighbour) || neighbour.Capacity < agentsize) {
                         continue;
                     }
 
@@ -122,15 +114,15 @@ namespace MortiseFrame.Compass {
             return GetPathFromNode(closestNodeToTarget, start);
         }
 
-        private List<Node2D> GetPathFromNode(Node2D endNode, Node2D startNode) {
-            var path = new List<Node2D>();
+        private List<Vector2> GetPathFromNode(Node2D endNode, Node2D startNode) {
+            var path = new List<Vector2>();
             var currentNode = endNode;
 
             while (currentNode != null) {
-                path.Add(currentNode);
+                path.Add(currentNode.GetPos());
                 currentNode = currentNode.Parent;
             }
-            path.Remove(startNode);
+            path.Remove(startNode.GetPos());
             path.Reverse();
             return path;
         }

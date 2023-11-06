@@ -14,7 +14,6 @@ namespace MortiseFrame.Compass.Sample {
 
         // Input
         [Header("覆盖单位数")] public Vector2Int UnitCount = new Vector2Int(10, 10);
-        [Header("每单位网格数(n x n)")] public int MPU = 1;
         Vector2 localOffset => new Vector2(-UnitCount.x * 0.5f, -UnitCount.y * 0.5f);
 
         // Lock
@@ -58,10 +57,10 @@ namespace MortiseFrame.Compass.Sample {
                 goes[i] = elements[i].gameObject;
             }
 
-            var toaster = new Toaster(MPU, UnitCount, localOffset, goes, calculateCapacity, maxCapacity);
-            var tm = toaster.Bake();
+            var capacity = new int[goes.Length];
 
-            model.tm = tm;
+            // TODO: Bake
+            model.capacity = capacity;
 
             EditorUtility.SetDirty(model);
             EditorUtility.SetDirty(this);
@@ -73,8 +72,7 @@ namespace MortiseFrame.Compass.Sample {
         void Clear() {
 
             isBaked = false;
-
-            model.tm.Clear();
+            model.capacity = null;
 
             EditorUtility.SetDirty(model);
             EditorUtility.SetDirty(this);
@@ -84,16 +82,9 @@ namespace MortiseFrame.Compass.Sample {
 
         void OnDrawGizmos() {
 
-            GizmosHelper.DrawLargeGrid(showLargeGrid, model.tm.CellSize, model.tm.CellCount, model.tm.LocalOffset, model.tm, largeGridColor);
-
             if (!isBaked) {
                 return;
             }
-
-            GizmosHelper.DrawGrid(showGrid, model.tm.CellSize, model.tm.CellCount, model.tm.LocalOffset, model.tm, gridColor);
-            GizmosHelper.DrawObstacle(showObstacle, model.tm.CellSize, model.tm.CellCount, model.tm.LocalOffset, model.tm, obstacleColor);
-            GizmosHelper.DrawCapacityTest(showCapacity, model.tm.CellSize, model.tm.CellCount, model.tm.LocalOffset, model.tm, capacityColor);
-            GizmosHelper.DrawRealCapacity(showRealCapacity, model.tm.CellSize, model.tm.CellCount, model.tm.LocalOffset, model.tm, realCapacityColor);
 
         }
 

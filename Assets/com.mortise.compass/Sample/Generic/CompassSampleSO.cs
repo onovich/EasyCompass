@@ -5,7 +5,8 @@ namespace MortiseFrame.Compass.Sample {
 
     public class CompassSampleSO : ScriptableObject {
 
-        [SerializeField] public ToasterGridTM tm;
+        [SerializeField] public int[] capacity;
+        [SerializeField] public int width;
 
     }
 
