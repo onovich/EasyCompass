@@ -20,7 +20,7 @@ namespace MortiseFrame.Compass {
             fMap = new Dictionary<Vector2, float>();
         }
 
-        public List<Vector2> FindPath(Vector2 start, Vector2 end, bool[,] map) {
+        public List<Vector2> FindPath(Vector2 startGrid, Vector2 endGrid, bool[,] map) {
             // 初始化
             openList.Clear();
             closedList.Clear();
@@ -28,18 +28,18 @@ namespace MortiseFrame.Compass {
             parentMap.Clear();
             fMap.Clear();
 
-            if (map[(int)end.x, (int)end.y] == false) {
+            if (map[(int)endGrid.x, (int)endGrid.y] == false) {
                 return path;
             }
 
             // 添加起始点到openList
-            openList.Add(start);
+            openList.Add(startGrid);
 
             // 设置当前点
-            var current = start;
+            var current = startGrid;
 
             // 计算 F
-            CalculateF(start, end);
+            CalculateF(startGrid, endGrid);
 
             // OpenList不为空时循环
             while (openList.Count > 0) {
@@ -48,7 +48,7 @@ namespace MortiseFrame.Compass {
                 current = GetMinFGrid();
 
                 // 如果当前点是终点，结束
-                if (current == end) {
+                if (current == endGrid) {
                     break;
                 }
 
@@ -70,11 +70,11 @@ namespace MortiseFrame.Compass {
                     if (!openList.Contains(neighbour)) {
                         openList.Add(neighbour);
                         parentMap[neighbour] = current;
-                        fMap[neighbour] = GetF(start, end, neighbour);
+                        fMap[neighbour] = GetF(startGrid, endGrid, neighbour);
                     } else {
                         // 如果在openList中，计算新的G值，如果比原来的小，更新F值，更新父节点
-                        if (GetG(start, current) + 1 < GetG(start, neighbour)) {
-                            fMap[neighbour] = GetF(start, end, neighbour);
+                        if (GetG(startGrid, current) + 1 < GetG(startGrid, neighbour)) {
+                            fMap[neighbour] = GetF(startGrid, endGrid, neighbour);
                             parentMap[neighbour] = current;
                         }
                     }
@@ -82,11 +82,11 @@ namespace MortiseFrame.Compass {
 
             }
             // 从目标开始回溯父节点，直到父节点==起始点
-            while (current != start) {
+            while (current != startGrid) {
                 path.Add(current);
                 current = parentMap[current];
             }
-            path.Add(start);
+            path.Add(startGrid);
             return path;
         }
 
