@@ -28,6 +28,10 @@ namespace MortiseFrame.Compass {
             parentMap.Clear();
             fMap.Clear();
 
+            if (map[(int)end.x, (int)end.y] == false) {
+                return path;
+            }
+
             // 添加起始点到openList
             openList.Add(start);
 

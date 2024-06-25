@@ -10,6 +10,7 @@ namespace MortiseFrame.Compass {
         [SerializeField] Vector2 minPos;
         [SerializeField] Vector2 maxPos;
         [SerializeField] float gridUnit = 1;
+        [SerializeField] Transform obstacleRoot;
 
         [SerializeField] GameObject startPoint;
         [SerializeField] GameObject endPoint;
@@ -47,13 +48,12 @@ namespace MortiseFrame.Compass {
         void Start() {
             pathFindingCore = new PathFindingCore();
             path = new List<Vector2>();
+            InitMap();
+            BakeObstacle();
             RefreshPath(pathFindingCore);
         }
 
-        void RefreshPath(PathFindingCore pathFindingCore) {
-            var start = startPoint.transform.position;
-            var end = endPoint.transform.position;
-
+        void InitMap() {
             var minGrid = GridUtil.PosToGrid(minPos, minPos, gridUnit);
             var maxGrid = GridUtil.PosToGrid(maxPos, minPos, gridUnit);
             var size = maxGrid - minGrid + Vector2.one;
@@ -66,13 +66,31 @@ namespace MortiseFrame.Compass {
                     map[i, j] = true;
                 }
             }
+        }
+
+        void BakeObstacle() {
+            if (obstacleRoot == null) {
+                return;
+            }
+            var count = obstacleRoot.childCount;
+            for (int i = 0; i < count; i++) {
+                var child = obstacleRoot.GetChild(i);
+                var pos = child.position;
+                var grid = GridUtil.PosToGrid(pos, minPos, gridUnit);
+                map[(int)grid.x, (int)grid.y] = false;
+            }
+        }
+
+        void RefreshPath(PathFindingCore pathFindingCore) {
+            var start = startPoint.transform.position;
+            var end = endPoint.transform.position;
 
             var startGrid = GridUtil.PosToGrid(start, minPos, gridUnit);
             var endGrid = GridUtil.PosToGrid(end, minPos, gridUnit);
 
             path.Clear();
             path = pathFindingCore.FindPath(startGrid, endGrid, map);
-            if (path == null) {
+            if (path == null || path.Count == 0) {
                 Debug.Log("No path found");
             }
         }
