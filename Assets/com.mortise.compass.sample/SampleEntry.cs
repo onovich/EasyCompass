@@ -42,6 +42,10 @@ namespace MortiseFrame.Compass {
             endPoint.transform.position = targetPos;
             if (axis != Vector3.zero) {
                 RefreshPath(pathFindingCore);
+                if (path.Count > 1) {
+                    startPoint.transform.position = GridUtil.GridToPos(path[1], minPos, gridUnit);
+                    RefreshPath(pathFindingCore);
+                }
             }
         }
 

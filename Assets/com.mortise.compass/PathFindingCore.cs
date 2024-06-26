@@ -87,6 +87,7 @@ namespace MortiseFrame.Compass {
                 current = parentMap[current];
             }
             path.Add(startGrid);
+            path.Reverse();
             return path;
         }
 
