@@ -16,7 +16,7 @@ namespace MortiseFrame.Compass {
         [SerializeField] GameObject endPoint;
 
         List<Vector2> path;
-        bool[,] map;
+        [SerializeField] bool[,] map;
         PathFindingCore pathFindingCore;
 
         void Update() {
@@ -78,10 +78,11 @@ namespace MortiseFrame.Compass {
             }
             var count = obstacleRoot.childCount;
             for (int i = 0; i < count; i++) {
-                var child = obstacleRoot.GetChild(i);
-                var pos = child.position;
-                var grid = GridUtil.PosToGrid(pos, minPos, gridUnit);
-                map[(int)grid.x, (int)grid.y] = false;
+                var child = obstacleRoot.GetChild(i).GetComponent<ObstacleEditorEntity>();
+                child.GetArea(gridUnit, (pos) => {
+                    var grid = GridUtil.PosToGrid(pos, minPos, gridUnit);
+                    map[(int)grid.x, (int)grid.y] = false;
+                });
             }
         }
 
@@ -100,28 +101,25 @@ namespace MortiseFrame.Compass {
         }
 
         void OnDrawGizmos() {
-            var minGrid = GridUtil.PosToGrid(minPos, minPos, gridUnit);
-            var maxGrid = GridUtil.PosToGrid(maxPos, minPos, gridUnit);
-            if (minGrid == maxGrid) {
+            if (gridUnit == 0) {
                 return;
             }
-            Gizmos.color = Color.red;
-            var size = maxGrid - minGrid;
+
+            var size = maxPos - minPos;
             var centerPos = minPos + size / 2;
 
-            var xCount = Mathf.RoundToInt(size.x / gridUnit);
-            var yCount = Mathf.RoundToInt(size.y / gridUnit);
-            Gizmos.color = new Color(0, 0, 1, 0.2f);
-            for (int i = 0; i <= xCount; i++) {
-                for (int j = 0; j <= yCount; j++) {
-                    var x = minPos.x + i * gridUnit;
-                    var y = minPos.y + j * gridUnit;
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireCube(centerPos, size);
+
+            Gizmos.color = Color.red;
+            Gizmos.color = new Color(1, 1, 1, 0.2f);
+            for (float i = 0; i < size.x; i += gridUnit) {
+                for (float j = 0; j < size.y; j += gridUnit) {
+                    var x = minPos.x + i + gridUnit / 2;
+                    var y = minPos.y + j + gridUnit / 2;
                     Gizmos.DrawWireCube(new Vector3(x, y, 0), new Vector3(gridUnit, gridUnit, 0));
                 }
             }
-
-            Gizmos.color = Color.red;
-            Gizmos.DrawWireCube(centerPos, size + new Vector2(gridUnit, gridUnit));
 
             if (path == null) {
                 return;
@@ -131,6 +129,19 @@ namespace MortiseFrame.Compass {
                 var current = GridUtil.GridToPos(path[i], minPos, gridUnit);
                 var next = GridUtil.GridToPos(path[i + 1], minPos, gridUnit);
                 Gizmos.DrawLine(current, next);
+            }
+
+            if (map == null) {
+                return;
+            }
+            Gizmos.color = Color.red;
+            for (int i = 0; i < map.GetLength(0); i++) {
+                for (int j = 0; j < map.GetLength(1); j++) {
+                    if (map[i, j] == false) {
+                        var pos = GridUtil.GridToPos(new Vector2(i, j), minPos, gridUnit);
+                        Gizmos.DrawCube(pos, new Vector3(gridUnit, gridUnit, 0));
+                    }
+                }
             }
         }
 
