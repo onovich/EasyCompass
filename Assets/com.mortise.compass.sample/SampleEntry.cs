@@ -42,9 +42,11 @@ namespace MortiseFrame.Compass {
 
             endPoint.transform.position = targetPos;
             if (axis != Vector3.zero) {
+                var oldPos = GridUtil.GridCenterToWorld(path[0], minPos, gridUnit);
                 RefreshPath(pathFindingCore);
                 if (path.Count > 1) {
-                    startPoint.transform.position = GridUtil.GridCenterToWorld(path[1], minPos, gridUnit);
+                    var offset = GridUtil.GridCenterToWorld(path[1], minPos, gridUnit) - oldPos;
+                    startPoint.transform.position += new Vector3(offset.x, offset.y, 0);
                     RefreshPath(pathFindingCore);
                 }
             }
@@ -53,8 +55,6 @@ namespace MortiseFrame.Compass {
         void Start() {
             pathFindingCore = new PathFindingCore();
             path = new List<Vector2>();
-            // InitMap();
-            // BakeObstacle();
             RefreshPath(pathFindingCore);
         }
 
@@ -65,14 +65,9 @@ namespace MortiseFrame.Compass {
         }
 
         void InitMap() {
-            var minGrid = GridUtil.WorldToGrid(minPos, minPos, gridUnit);
-            var maxGrid = GridUtil.WorldToGrid(maxPos, minPos, gridUnit);
-            var size = maxGrid - minGrid + Vector2.one;
+            var size = maxPos - minPos;
             var xCount = Mathf.CeilToInt(size.x);
             var yCount = Mathf.CeilToInt(size.y);
-            Debug.Log("minGrid = " + minGrid + " maxGrid = " + maxGrid);
-            Debug.Log("size.x = " + size.x + " size.y = " + size.y + " gridUnit = " + gridUnit);
-            Debug.Log("xCount = " + xCount + " yCount = " + yCount);
 
             map = new bool[xCount * yCount];
             mapWidth = xCount;
