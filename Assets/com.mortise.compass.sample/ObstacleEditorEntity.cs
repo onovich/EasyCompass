@@ -9,7 +9,7 @@ namespace MortiseFrame.Compass {
     public class ObstacleEditorEntity : MonoBehaviour {
 
         public Vector2 GetSize() {
-            return transform.localScale;
+            return transform.GetChild(0).transform.localScale;
         }
 
         public Vector2 GetMinPos() {
@@ -22,16 +22,8 @@ namespace MortiseFrame.Compass {
 
         public void GetArea(float gridUnit, Action<Vector2> action) {
             var minPos = GetMinPos();
-            var maxPos = GetMax();
-
-            var xCount = Mathf.RoundToInt((maxPos.x - minPos.x) / gridUnit);
-            var yCount = Mathf.RoundToInt((maxPos.y - minPos.y) / gridUnit);
-
-            for (int x = 0; x < xCount; x++) {
-                for (int y = 0; y < yCount; y++) {
-                    action(new Vector2(minPos.x + x * gridUnit, minPos.y + y * gridUnit));
-                }
-            }
+            var size = GetSize();
+            GridUtil.SizeToGridArea(size, minPos, gridUnit, action);
         }
 
 

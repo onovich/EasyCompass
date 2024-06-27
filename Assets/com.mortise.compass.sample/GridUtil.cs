@@ -4,12 +4,33 @@ namespace MortiseFrame.Compass {
 
     public static class GridUtil {
 
-        public static Vector2 PosToGrid(Vector2 pos, Vector2 min, float gridUnit) {
-            return new Vector2((int)((pos.x - min.x) / gridUnit), (int)((pos.y - min.y) / gridUnit));
+        public static Vector2 WorldToGrid(Vector2 worldPoint,
+                                          Vector2 gridCornerLD,
+                                          float gridUnit) {
+            var x = Mathf.Floor((worldPoint.x - gridCornerLD.x) / gridUnit);
+            var y = Mathf.Floor((worldPoint.y - gridCornerLD.y) / gridUnit);
+            return new Vector2(x, y);
         }
 
-        public static Vector2 GridToPos(Vector2 grid, Vector2 min, float gridUnit) {
-            return new Vector2(min.x + grid.x * gridUnit, min.y + grid.y * gridUnit);
+        public static Vector2 GridCenterToWorld(Vector2 gridCenter,
+                                          Vector2 gridCornerLD,
+                                          float gridUnit) {
+            var x = gridCornerLD.x + gridCenter.x * gridUnit + gridUnit / 2;
+            var y = gridCornerLD.y + gridCenter.y * gridUnit + gridUnit / 2;
+            return new Vector2(x, y);
+        }
+
+        public static void SizeToGridArea(Vector2 size,
+                                          Vector2 minPos,
+                                          float gridUnit,
+                                          System.Action<Vector2> action) {
+            for (float x = 0; x < size.x; x += gridUnit) {
+                for (float y = 0; y < size.y; y += gridUnit) {
+                    var offset = new Vector2(x, y);
+                    var pos = minPos + offset;
+                    action(pos);
+                }
+            }
         }
     }
 }

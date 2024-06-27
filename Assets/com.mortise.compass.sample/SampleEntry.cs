@@ -43,7 +43,7 @@ namespace MortiseFrame.Compass {
             if (axis != Vector3.zero) {
                 RefreshPath(pathFindingCore);
                 if (path.Count > 1) {
-                    startPoint.transform.position = GridUtil.GridToPos(path[1], minPos, gridUnit);
+                    startPoint.transform.position = GridUtil.GridCenterToWorld(path[1], minPos, gridUnit);
                     RefreshPath(pathFindingCore);
                 }
             }
@@ -58,11 +58,16 @@ namespace MortiseFrame.Compass {
         }
 
         void InitMap() {
-            var minGrid = GridUtil.PosToGrid(minPos, minPos, gridUnit);
-            var maxGrid = GridUtil.PosToGrid(maxPos, minPos, gridUnit);
+            var minGrid = GridUtil.WorldToGrid(minPos, minPos, gridUnit);
+            var maxGrid = GridUtil.WorldToGrid(maxPos, minPos, gridUnit);
             var size = maxGrid - minGrid + Vector2.one;
-            var xCount = Mathf.RoundToInt(size.x / gridUnit);
-            var yCount = Mathf.RoundToInt(size.y / gridUnit);
+            // var xCount = Mathf.CeilToInt(size.x / gridUnit);
+            // var yCount = Mathf.CeilToInt(size.y / gridUnit);
+            var xCount = Mathf.CeilToInt(size.x);
+            var yCount = Mathf.CeilToInt(size.y);
+            Debug.Log("minGrid = " + minGrid + " maxGrid = " + maxGrid);
+            Debug.Log("size.x = " + size.x + " size.y = " + size.y + " gridUnit = " + gridUnit);
+            Debug.Log("xCount = " + xCount + " yCount = " + yCount);
 
             map = new bool[xCount, yCount];
             for (int i = 0; i < xCount; i++) {
@@ -70,6 +75,27 @@ namespace MortiseFrame.Compass {
                     map[i, j] = true;
                 }
             }
+        }
+
+        bool OutOfMap(Vector2 grid) {
+            var xBelowZero = grid.x < 0;
+            if (xBelowZero) {
+                Debug.Log("xBelowZero" + grid.x);
+            }
+            var outOfWidth = grid.x >= map.GetLength(0);
+            if (outOfWidth) {
+                Debug.Log("outOfWidth" + grid.x + " w = " + map.GetLength(0));
+            }
+            var yBelowZero = grid.y < 0;
+            if (yBelowZero) {
+                Debug.Log("yBelowZero" + grid.y);
+            }
+            var outOfHeight = grid.y >= map.GetLength(1);
+            if (outOfHeight) {
+                Debug.Log("outOfHeight " + grid.y + " h = " + map.GetLength(1));
+            }
+            var isOut = xBelowZero || outOfWidth || yBelowZero || outOfHeight;
+            return isOut;
         }
 
         void BakeObstacle() {
@@ -80,7 +106,9 @@ namespace MortiseFrame.Compass {
             for (int i = 0; i < count; i++) {
                 var child = obstacleRoot.GetChild(i).GetComponent<ObstacleEditorEntity>();
                 child.GetArea(gridUnit, (pos) => {
-                    var grid = GridUtil.PosToGrid(pos, minPos, gridUnit);
+                    var grid = GridUtil.WorldToGrid(pos, minPos, gridUnit);
+                    if (OutOfMap(grid)) {
+                    }
                     map[(int)grid.x, (int)grid.y] = false;
                 });
             }
@@ -90,8 +118,8 @@ namespace MortiseFrame.Compass {
             var start = startPoint.transform.position;
             var end = endPoint.transform.position;
 
-            var startGrid = GridUtil.PosToGrid(start, minPos, gridUnit);
-            var endGrid = GridUtil.PosToGrid(end, minPos, gridUnit);
+            var startGrid = GridUtil.WorldToGrid(start, minPos, gridUnit);
+            var endGrid = GridUtil.WorldToGrid(end, minPos, gridUnit);
 
             path.Clear();
             path = pathFindingCore.FindPath(startGrid, endGrid, map);
@@ -126,8 +154,8 @@ namespace MortiseFrame.Compass {
             }
             Gizmos.color = Color.yellow;
             for (int i = 0; i < path.Count - 1; i++) {
-                var current = GridUtil.GridToPos(path[i], minPos, gridUnit);
-                var next = GridUtil.GridToPos(path[i + 1], minPos, gridUnit);
+                var current = GridUtil.GridCenterToWorld(path[i], minPos, gridUnit);
+                var next = GridUtil.GridCenterToWorld(path[i + 1], minPos, gridUnit);
                 Gizmos.DrawLine(current, next);
             }
 
@@ -138,7 +166,7 @@ namespace MortiseFrame.Compass {
             for (int i = 0; i < map.GetLength(0); i++) {
                 for (int j = 0; j < map.GetLength(1); j++) {
                     if (map[i, j] == false) {
-                        var pos = GridUtil.GridToPos(new Vector2(i, j), minPos, gridUnit);
+                        var pos = GridUtil.GridCenterToWorld(new Vector2(i, j), minPos, gridUnit);
                         Gizmos.DrawCube(pos, new Vector3(gridUnit, gridUnit, 0));
                     }
                 }
