@@ -138,7 +138,19 @@ namespace MortiseFrame.Compass {
             }
         }
 
-        void OnDrawGizmos() {
+        void OnDrawPath() {
+            if (path == null) {
+                return;
+            }
+            Gizmos.color = Color.yellow;
+            for (int i = 0; i < path.Count - 1; i++) {
+                var current = GridUtil.GridCenterToWorld(path[i], minPos, gridUnit);
+                var next = GridUtil.GridCenterToWorld(path[i + 1], minPos, gridUnit);
+                Gizmos.DrawLine(current, next);
+            }
+        }
+
+        void OnDrawGrid() {
             if (gridUnit == 0) {
                 return;
             }
@@ -158,21 +170,14 @@ namespace MortiseFrame.Compass {
                     Gizmos.DrawWireCube(new Vector3(x, y, 0), new Vector3(gridUnit, gridUnit, 0));
                 }
             }
+        }
 
-            if (path == null) {
-                return;
-            }
-            Gizmos.color = Color.yellow;
-            for (int i = 0; i < path.Count - 1; i++) {
-                var current = GridUtil.GridCenterToWorld(path[i], minPos, gridUnit);
-                var next = GridUtil.GridCenterToWorld(path[i + 1], minPos, gridUnit);
-                Gizmos.DrawLine(current, next);
-            }
-
+        void OnDrawObstacle() {
             if (map == null || map.Length == 0) {
                 return;
             }
             Gizmos.color = Color.red;
+            var size = maxPos - minPos;
             GridUtil.SizeToGridArea(size, minPos, gridUnit, (grid) => {
                 var awalkable = MapUtil.IsMapWalkable(map, mapWidth, (int)grid.x, (int)grid.y);
                 if (awalkable == false) {
@@ -180,6 +185,12 @@ namespace MortiseFrame.Compass {
                     Gizmos.DrawCube(pos, new Vector3(gridUnit, gridUnit, 0));
                 }
             });
+        }
+
+        void OnDrawGizmos() {
+            OnDrawGrid();
+            OnDrawPath();
+            OnDrawObstacle();
         }
     }
 
