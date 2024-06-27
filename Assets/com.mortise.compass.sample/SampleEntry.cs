@@ -16,7 +16,8 @@ namespace MortiseFrame.Compass {
         [SerializeField] GameObject endPoint;
 
         List<Vector2> path;
-        [SerializeField] bool[,] map;
+        [SerializeField] bool[] map;
+        [SerializeField] int mapWidth;
         PathFindingCore pathFindingCore;
 
         void Update() {
@@ -61,18 +62,17 @@ namespace MortiseFrame.Compass {
             var minGrid = GridUtil.WorldToGrid(minPos, minPos, gridUnit);
             var maxGrid = GridUtil.WorldToGrid(maxPos, minPos, gridUnit);
             var size = maxGrid - minGrid + Vector2.one;
-            // var xCount = Mathf.CeilToInt(size.x / gridUnit);
-            // var yCount = Mathf.CeilToInt(size.y / gridUnit);
             var xCount = Mathf.CeilToInt(size.x);
             var yCount = Mathf.CeilToInt(size.y);
             Debug.Log("minGrid = " + minGrid + " maxGrid = " + maxGrid);
             Debug.Log("size.x = " + size.x + " size.y = " + size.y + " gridUnit = " + gridUnit);
             Debug.Log("xCount = " + xCount + " yCount = " + yCount);
 
-            map = new bool[xCount, yCount];
+            map = new bool[xCount * yCount];
+            mapWidth = xCount;
             for (int i = 0; i < xCount; i++) {
                 for (int j = 0; j < yCount; j++) {
-                    map[i, j] = true;
+                    MapUtil.TrySetMapWalkable(map, xCount, i, j, true);
                 }
             }
         }
@@ -82,17 +82,18 @@ namespace MortiseFrame.Compass {
             if (xBelowZero) {
                 Debug.Log("xBelowZero" + grid.x);
             }
-            var outOfWidth = grid.x >= map.GetLength(0);
+            var outOfWidth = grid.x >= mapWidth;
             if (outOfWidth) {
-                Debug.Log("outOfWidth" + grid.x + " w = " + map.GetLength(0));
+                Debug.Log("outOfWidth" + grid.x + " w = " + mapWidth);
             }
             var yBelowZero = grid.y < 0;
             if (yBelowZero) {
                 Debug.Log("yBelowZero" + grid.y);
             }
-            var outOfHeight = grid.y >= map.GetLength(1);
+            var mapHeight = MapUtil.GetMapHeight(map, mapWidth);
+            var outOfHeight = grid.y >= mapHeight;
             if (outOfHeight) {
-                Debug.Log("outOfHeight " + grid.y + " h = " + map.GetLength(1));
+                Debug.Log("outOfHeight " + grid.y + " h = " + mapHeight);
             }
             var isOut = xBelowZero || outOfWidth || yBelowZero || outOfHeight;
             return isOut;
@@ -109,7 +110,7 @@ namespace MortiseFrame.Compass {
                     var grid = GridUtil.WorldToGrid(pos, minPos, gridUnit);
                     if (OutOfMap(grid)) {
                     }
-                    map[(int)grid.x, (int)grid.y] = false;
+                    MapUtil.TrySetMapWalkable(map, mapWidth, (int)grid.x, (int)grid.y, false);
                 });
             }
         }
@@ -122,7 +123,7 @@ namespace MortiseFrame.Compass {
             var endGrid = GridUtil.WorldToGrid(end, minPos, gridUnit);
 
             path.Clear();
-            path = pathFindingCore.FindPath(startGrid, endGrid, map);
+            path = pathFindingCore.FindPath(startGrid, endGrid, map, mapWidth);
             if (path == null || path.Count == 0) {
                 Debug.Log("No path found");
             }
@@ -159,20 +160,18 @@ namespace MortiseFrame.Compass {
                 Gizmos.DrawLine(current, next);
             }
 
-            if (map == null) {
+            if (map == null || map.Length == 0) {
                 return;
             }
             Gizmos.color = Color.red;
-            for (int i = 0; i < map.GetLength(0); i++) {
-                for (int j = 0; j < map.GetLength(1); j++) {
-                    if (map[i, j] == false) {
-                        var pos = GridUtil.GridCenterToWorld(new Vector2(i, j), minPos, gridUnit);
-                        Gizmos.DrawCube(pos, new Vector3(gridUnit, gridUnit, 0));
-                    }
+            GridUtil.SizeToGridArea(size, minPos, gridUnit, (grid) => {
+                var awalkable = MapUtil.IsMapWalkable(map, mapWidth, (int)grid.x, (int)grid.y);
+                if (awalkable == false) {
+                    var pos = GridUtil.GridCenterToWorld(new Vector2((int)grid.x, (int)grid.y), minPos, gridUnit);
+                    Gizmos.DrawCube(pos, new Vector3(gridUnit, gridUnit, 0));
                 }
-            }
+            });
         }
-
     }
 
 }

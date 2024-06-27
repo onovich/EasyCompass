@@ -154,7 +154,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   minPos: {x: -10, y: -5}
   maxPos: {x: 10, y: 5}
-  gridUnit: 2
+  gridUnit: 1
   obstacleRoot: {fileID: 173215016}
   startPoint: {fileID: 1955385447}
   endPoint: {fileID: 542659935}

@@ -26,9 +26,9 @@ namespace MortiseFrame.Compass {
                                           System.Action<Vector2> action) {
             for (float x = 0; x < size.x; x += gridUnit) {
                 for (float y = 0; y < size.y; y += gridUnit) {
-                    var offset = new Vector2(x, y);
-                    var pos = minPos + offset;
-                    action(pos);
+                    var pos = new Vector2(x, y) + minPos;
+                    var grid = WorldToGrid(pos, minPos, gridUnit);
+                    action(grid);
                 }
             }
         }
