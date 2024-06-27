@@ -20,10 +20,10 @@ namespace MortiseFrame.Compass {
             return GetMinPos() + GetSize();
         }
 
-        public void GetArea(float gridUnit, Action<Vector2> action) {
+        public void GetArea(float gridUnit, Vector2 gridCornerLD, Action<Vector2> action) {
             var minPos = GetMinPos();
             var size = GetSize();
-            GridUtil.SizeToGridArea(size, minPos, gridUnit, action);
+            GridUtil.SizeToGridArea(size, minPos, gridCornerLD, gridUnit, action);
         }
 
 
