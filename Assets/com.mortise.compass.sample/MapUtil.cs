@@ -18,7 +18,7 @@ namespace MortiseFrame.Compass {
         static int GetGridIndex(int width, int gridX, int gridY) {
             return gridY * width + gridX;
         }
-
+    
         public static int GetMapHeight(bool[] map, int width) {
             if (width == 0) {
                 return 0;
