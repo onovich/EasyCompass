@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Codice.Client.BaseCommands;
 using UnityEditor;
 using UnityEngine;
 
@@ -172,14 +173,14 @@ namespace MortiseFrame.Compass {
                 return;
             }
             Gizmos.color = Color.red;
-            var size = maxPos - minPos;
-            GridUtil.SizeToGridArea(size, minPos, gridUnit, (grid) => {
-                var awalkable = MapUtil.IsMapWalkable(map, mapWidth, (int)grid.x, (int)grid.y);
+            for (int index = 0; index < map.Length; index++) {
+                var grid = MapUtil.IndexToGridCenter(mapWidth, index);
+                var awalkable = MapUtil.IsMapWalkable(map, mapWidth, grid.x, grid.y);
                 if (awalkable == false) {
-                    var pos = GridUtil.GridCenterToWorld(new Vector2((int)grid.x, (int)grid.y), minPos, gridUnit);
+                    var pos = GridUtil.GridCenterToWorld(new Vector2(grid.x, grid.y), minPos, gridUnit);
                     Gizmos.DrawCube(pos, new Vector3(gridUnit, gridUnit, 0));
                 }
-            });
+            }
         }
 
         void OnDrawGizmos() {

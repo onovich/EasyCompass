@@ -29,6 +29,7 @@ namespace MortiseFrame.Compass {
                     var pos = new Vector2(x, y) + minPos;
                     var grid = WorldToGrid(pos, minPos, gridUnit);
                     action(grid);
+                    Debug.Log("GetArea, grid = " + grid);
                 }
             }
         }
