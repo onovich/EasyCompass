@@ -123,7 +123,10 @@ namespace MortiseFrame.Compass {
             var endGrid = GridUtil.WorldToGrid(end, minPos, gridUnit);
 
             path.Clear();
-            path = pathFindingCore.FindPath(startGrid, endGrid, map, mapWidth);
+            var mapHeight = MapUtil.GetMapHeight(map, mapWidth);
+            path = pathFindingCore.FindPath(startGrid, endGrid, (x, y) => {
+                return MapUtil.IsMapWalkable(map, mapWidth, x, y);
+            }, mapWidth, mapHeight);
             if (path == null || path.Count == 0) {
                 Debug.Log("No path found");
             }

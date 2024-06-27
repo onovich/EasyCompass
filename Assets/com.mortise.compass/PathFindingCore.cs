@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Codice.CM.Client.Differences.Graphic;
@@ -21,7 +22,7 @@ namespace MortiseFrame.Compass {
             fMap = new Dictionary<Vector2, float>();
         }
 
-        public List<Vector2> FindPath(Vector2 startGrid, Vector2 endGrid, bool[] map, int mapWidth) {
+        public List<Vector2> FindPath(Vector2 startGrid, Vector2 endGrid, Func<int, int, bool> walkable, int mapWidth, int mapHeight) {
             // 初始化
             openList.Clear();
             closedList.Clear();
@@ -29,8 +30,7 @@ namespace MortiseFrame.Compass {
             parentMap.Clear();
             fMap.Clear();
 
-            var walkable = MapUtil.IsMapWalkable(map, mapWidth, (int)endGrid.x, (int)endGrid.y);
-            if (walkable == false) {
+            if (walkable((int)endGrid.x, (int)endGrid.y) == false) {
                 return path;
             }
 
@@ -61,7 +61,7 @@ namespace MortiseFrame.Compass {
                 closedList.Add(current);
 
                 // 找到当前点附近的点
-                List<Vector2> neighbours = GetNeighbours(current, map, mapWidth);
+                List<Vector2> neighbours = GetNeighbours(current, walkable, mapWidth, mapHeight);
                 foreach (Vector2 neighbour in neighbours) {
 
                     if (closedList.Contains(neighbour)) {
@@ -129,26 +129,25 @@ namespace MortiseFrame.Compass {
             return Vector2.Distance(point, end);
         }
 
-        List<Vector2> GetNeighbours(Vector2 point, bool[] map, int mapWidth) {
+        List<Vector2> GetNeighbours(Vector2 point, Func<int, int, bool> walkable, int mapWidth, int mapHeight) {
             List<Vector2> neighbours = new List<Vector2>();
 
             int x = (int)point.x;
             int y = (int)point.y;
 
-            if (x - 1 >= 0 && MapUtil.IsMapWalkable(map, mapWidth, x - 1, y) == true) {
+            if (x - 1 >= 0 && walkable(x - 1, y) == true) {
                 neighbours.Add(new Vector2(x - 1, y));
             }
 
-            if (x + 1 < mapWidth && MapUtil.IsMapWalkable(map, mapWidth, x + 1, y) == true) {
+            if (x + 1 < mapWidth && walkable(x + 1, y) == true) {
                 neighbours.Add(new Vector2(x + 1, y));
             }
 
-            if (y - 1 >= 0 && MapUtil.IsMapWalkable(map, mapWidth, x, y - 1) == true) {
+            if (y - 1 >= 0 && walkable(x, y - 1) == true) {
                 neighbours.Add(new Vector2(x, y - 1));
             }
 
-            var mapHeight = MapUtil.GetMapHeight(map, mapWidth);
-            if (y + 1 < mapHeight && MapUtil.IsMapWalkable(map, mapWidth, x, y + 1) == true) {
+            if (y + 1 < mapHeight && walkable(x, y + 1) == true) {
                 neighbours.Add(new Vector2(x, y + 1));
             }
 
