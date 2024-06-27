@@ -36,7 +36,7 @@ namespace MortiseFrame.Compass {
             }
 
             var targetPos = endPoint.transform.position + axis;
-            if (targetPos.x < minPos.x || targetPos.x > maxPos.x || targetPos.y < minPos.y || targetPos.y > maxPos.y) {
+            if (targetPos.x < minPos.x || targetPos.x > maxPos.x - gridUnit || targetPos.y < minPos.y || targetPos.y > maxPos.y - gridUnit) {
                 return;
             }
 
