@@ -53,9 +53,15 @@ namespace MortiseFrame.Compass {
         void Start() {
             pathFindingCore = new PathFindingCore();
             path = new List<Vector2>();
+            // InitMap();
+            // BakeObstacle();
+            RefreshPath(pathFindingCore);
+        }
+
+        [ContextMenu("Bake")]
+        void Bake() {
             InitMap();
             BakeObstacle();
-            RefreshPath(pathFindingCore);
         }
 
         void InitMap() {
