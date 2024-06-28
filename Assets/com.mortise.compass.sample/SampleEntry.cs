@@ -108,8 +108,7 @@ namespace MortiseFrame.Compass.Sample {
             var count = obstacleRoot.childCount;
             for (int i = 0; i < count; i++) {
                 var child = obstacleRoot.GetChild(i).GetComponent<ObstacleEditorEntity>();
-                child.GetArea(gridUnit, gridGridCornerLD, (pos) => {
-                    var grid = GridUtil.WorldToGrid(pos, gridGridCornerLD, gridUnit);
+                child.GetArea(gridUnit, gridGridCornerLD, (grid) => {
                     if (OutOfMap(grid)) {
                     }
                     MapUtil.TrySetMapWalkable(map, mapWidth, (int)grid.x, (int)grid.y, false);
