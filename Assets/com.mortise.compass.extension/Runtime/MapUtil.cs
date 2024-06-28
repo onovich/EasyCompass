@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace MortiseFrame.Compass {
+namespace MortiseFrame.Compass.Extension {
 
     public static class MapUtil {
 

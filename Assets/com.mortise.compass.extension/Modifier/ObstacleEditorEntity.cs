@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-namespace MortiseFrame.Compass {
+namespace MortiseFrame.Compass.Extension {
 
     public class ObstacleEditorEntity : MonoBehaviour {
 
