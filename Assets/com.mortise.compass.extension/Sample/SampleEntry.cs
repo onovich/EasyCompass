@@ -17,6 +17,7 @@ namespace MortiseFrame.Compass.Extension.Sample {
         [SerializeField] GameObject endPoint;
 
         [SerializeField] PathFindingDirection directionMode;
+        [SerializeField] bool cornerWalkable;
 
         List<Vector2> path;
         [SerializeField] bool[] map;
@@ -83,7 +84,7 @@ namespace MortiseFrame.Compass.Extension.Sample {
             var mapHeight = MapUtil.GetMapHeight(map, mapWidth);
             path = pathFindingCore.FindPath(startGrid, endGrid, (x, y) => {
                 return MapUtil.IsMapWalkable(map, mapWidth, x, y);
-            }, mapWidth, mapHeight, directionMode);
+            }, mapWidth, mapHeight, directionMode, cornerWalkable);
             if (path == null || path.Count == 0) {
                 Debug.Log("No path found");
             }
