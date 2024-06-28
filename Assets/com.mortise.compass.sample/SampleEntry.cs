@@ -42,8 +42,8 @@ namespace MortiseFrame.Compass.Sample {
                     RefreshPath(pathFindingCore);
                 }
                 if (path.Count > 1) {
-                    var oldPos = GridUtil.GridCenterToWorld(path[0], gridGridCornerLD, gridUnit);
-                    var offset = GridUtil.GridCenterToWorld(path[1], gridGridCornerLD, gridUnit) - oldPos;
+                    var oldPos = GridUtil.GridToWorld_Center(path[0], gridGridCornerLD, gridUnit);
+                    var offset = GridUtil.GridToWorld_Center(path[1], gridGridCornerLD, gridUnit) - oldPos;
                     MoveRole(offset, startPoint.transform);
                     RefreshPath(pathFindingCore);
                 }
@@ -146,8 +146,8 @@ namespace MortiseFrame.Compass.Sample {
             }
             Gizmos.color = Color.yellow;
             for (int i = 0; i < path.Count - 1; i++) {
-                var current = GridUtil.GridCenterToWorld(path[i], gridGridCornerLD, gridUnit);
-                var next = GridUtil.GridCenterToWorld(path[i + 1], gridGridCornerLD, gridUnit);
+                var current = GridUtil.GridToWorld_Center(path[i], gridGridCornerLD, gridUnit);
+                var next = GridUtil.GridToWorld_Center(path[i + 1], gridGridCornerLD, gridUnit);
                 Gizmos.DrawLine(current, next);
             }
         }
@@ -183,7 +183,7 @@ namespace MortiseFrame.Compass.Sample {
                 var grid = MapUtil.IndexToGridCenter(mapWidth, index);
                 var awalkable = MapUtil.IsMapWalkable(map, mapWidth, grid.x, grid.y);
                 if (awalkable == false) {
-                    var pos = GridUtil.GridCenterToWorld(new Vector2(grid.x, grid.y), gridGridCornerLD, gridUnit);
+                    var pos = GridUtil.GridToWorld_Center(new Vector2(grid.x, grid.y), gridGridCornerLD, gridUnit);
                     Gizmos.DrawCube(pos, new Vector3(gridUnit, gridUnit, 0));
                 }
             }

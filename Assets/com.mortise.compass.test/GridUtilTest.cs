@@ -26,7 +26,7 @@ namespace MortiseFrame.Compass.Test {
             float gridUnitValue = gridUnit;
 
             Vector2 expectedWorldPoint = new Vector2(expectedX, expectedY);
-            Vector2 actualWorldPoint = GridUtil.GridCenterToWorld(gridCenter, gridCornerLD, gridUnitValue);
+            Vector2 actualWorldPoint = GridUtil.GridToWorld_Center(gridCenter, gridCornerLD, gridUnitValue);
 
             Assert.AreEqual(expectedWorldPoint, actualWorldPoint);
         }
