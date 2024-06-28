@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Codice.Client.BaseCommands;
@@ -20,6 +21,7 @@ namespace MortiseFrame.Compass.Extension.Sample {
         [SerializeField] bool cornerWalkable;
 
         Vector2[] path;
+        int pathLen;
         [SerializeField] bool[] map;
         [SerializeField] int mapWidth;
         [SerializeField] int pathLenExpected = 100;
@@ -77,9 +79,10 @@ namespace MortiseFrame.Compass.Extension.Sample {
 
             var startGrid = GridUtil.WorldToGrid(start, gridGridCornerLD, gridUnit);
             var endGrid = GridUtil.WorldToGrid(end, gridGridCornerLD, gridUnit);
+            Array.Clear(path, 0, path.Length);
 
             var mapHeight = MapUtil.GetMapHeight(map, mapWidth);
-            var pathLen = PathFindingCore.FindPath(startGrid, endGrid, (x, y) => {
+            pathLen = PathFindingCore.FindPath(startGrid, endGrid, (x, y) => {
                 return MapUtil.IsMapWalkable(map, mapWidth, x, y);
             }, mapWidth, mapHeight, directionMode, cornerWalkable, path);
             if (path == null || path.Length == 0) {
@@ -92,7 +95,7 @@ namespace MortiseFrame.Compass.Extension.Sample {
                 return;
             }
             Gizmos.color = Color.yellow;
-            for (int i = 0; i < path.Length - 1; i++) {
+            for (int i = 0; i < pathLen - 1; i++) {
                 var current = GridUtil.GridToWorld_Center(path[i], gridGridCornerLD, gridUnit);
                 var next = GridUtil.GridToWorld_Center(path[i + 1], gridGridCornerLD, gridUnit);
                 Gizmos.DrawLine(current, next);

@@ -22,18 +22,18 @@ namespace MortiseFrame.Compass {
             parentMap.Clear();
             fMap.Clear();
 
-            if (walkable((int)endGrid.x, (int)endGrid.y) == false) {
+            if (walkable((int)startGrid.x, (int)startGrid.y) == false) {
                 return 0;
             }
 
             // 添加起始点到openList
-            openList.Add(startGrid);
+            openList.Add(endGrid);
 
             // 设置当前点
-            var current = startGrid;
+            var current = endGrid;
 
             // 计算 F
-            CalculateF(startGrid, endGrid);
+            CalculateF(endGrid, startGrid);
 
             // OpenList不为空时循环
             while (openList.Count > 0) {
@@ -42,7 +42,7 @@ namespace MortiseFrame.Compass {
                 current = GetMinFGrid();
 
                 // 如果当前点是终点，结束
-                if (current == endGrid) {
+                if (current == startGrid) {
                     break;
                 }
 
@@ -65,11 +65,11 @@ namespace MortiseFrame.Compass {
                     if (!openList.Contains(neighbour)) {
                         openList.Add(neighbour);
                         parentMap[neighbour] = current;
-                        fMap[neighbour] = GetF(startGrid, endGrid, neighbour);
+                        fMap[neighbour] = GetF(endGrid, startGrid, neighbour);
                     } else {
                         // 如果在openList中，计算新的G值，如果比原来的小，更新F值，更新父节点
-                        if (GetG(startGrid, current) + 1 < GetG(startGrid, neighbour)) {
-                            fMap[neighbour] = GetF(startGrid, endGrid, neighbour);
+                        if (GetG(endGrid, current) + 1 < GetG(endGrid, neighbour)) {
+                            fMap[neighbour] = GetF(endGrid, startGrid, neighbour);
                             parentMap[neighbour] = current;
                         }
                     }
@@ -78,16 +78,15 @@ namespace MortiseFrame.Compass {
             }
             // 从目标开始回溯父节点，直到父节点==起始点
             var index = 0;
-            while (current != startGrid && index < path.Length) {
+            while (current != endGrid && index < path.Length) {
                 path[index] = current;
                 current = parentMap[current];
                 index++;
             }
             if (index < path.Length) {
-                path[index] = startGrid;
+                path[index] = endGrid;
                 index++;
             }
-            Array.Reverse(path);
             return index;
         }
 
