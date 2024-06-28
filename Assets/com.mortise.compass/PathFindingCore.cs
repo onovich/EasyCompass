@@ -78,13 +78,15 @@ namespace MortiseFrame.Compass {
             }
             // 从目标开始回溯父节点，直到父节点==起始点
             var index = 0;
-            while (current != startGrid) {
+            while (current != startGrid && index < path.Length) {
                 path[index] = current;
                 current = parentMap[current];
                 index++;
             }
-            path[index] = startGrid;
-            index++;
+            if (index < path.Length) {
+                path[index] = startGrid;
+                index++;
+            }
             Array.Reverse(path);
             return index;
         }
