@@ -72,9 +72,10 @@ namespace MortiseFrame.Compass.Sample {
         }
 
         void InitMap() {
-            var size = gridGridConderRT - gridGridCornerLD;
-            var xCount = Mathf.CeilToInt(size.x);
-            var yCount = Mathf.CeilToInt(size.y);
+            var gridLD = GridUtil.WorldToGrid(gridGridCornerLD, gridGridCornerLD, gridUnit);
+            var gridRT = GridUtil.WorldToGrid(gridGridConderRT, gridGridCornerLD, gridUnit);
+            var xCount = (int)(gridRT.x - gridLD.x);
+            var yCount = (int)(gridRT.y - gridLD.y);
 
             map = new bool[xCount * yCount];
             mapWidth = xCount;
@@ -177,7 +178,7 @@ namespace MortiseFrame.Compass.Sample {
             if (map == null || map.Length == 0) {
                 return;
             }
-            Gizmos.color = Color.red;
+            Gizmos.color = new Color(1, 0, 0, 0.5f);
             for (int index = 0; index < map.Length; index++) {
                 var grid = MapUtil.IndexToGridCenter(mapWidth, index);
                 var awalkable = MapUtil.IsMapWalkable(map, mapWidth, grid.x, grid.y);

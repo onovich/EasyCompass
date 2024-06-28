@@ -26,14 +26,18 @@ namespace MortiseFrame.Compass {
                                           Vector2 gridCornerLD,
                                           float gridUnit,
                                           System.Action<Vector2> action) {
-            for (float x = 0; x < size.x; x += gridUnit) {
-                for (float y = 0; y < size.y; y += gridUnit) {
-                    var pos = new Vector2(x, y) + obstacleMinPos;
-                    var grid = WorldToGrid(pos, gridCornerLD, gridUnit);
-                    // Debug.Log("GetArea, grid = " + grid + " pos = " + pos);
+
+            var obstacleMaxPos = obstacleMinPos + size;
+            var gridMin = WorldToGrid(obstacleMinPos, gridCornerLD, gridUnit);
+            var gridMax = WorldToGrid(obstacleMaxPos, gridCornerLD, gridUnit);
+            Debug.Log("minPos = " + obstacleMinPos +
+            " maxPos = " + obstacleMaxPos +
+            " gridMin = " + gridMin +
+            " gridMax = " + gridMax);
+            for (float x = gridMin.x; x <= gridMax.x; x++) {
+                for (float y = gridMin.y; y <= gridMax.y; y++) {
+                    var grid = new Vector2(x, y);
                     action(grid);
-                    Debug.Log("GetArea, pos = " + pos + " (x,y) = " + x + "," + y + " grid = " + grid
-                    + " minPos = " + obstacleMinPos + " gridUnit = " + gridUnit);
                 }
             }
         }
