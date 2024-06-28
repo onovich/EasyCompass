@@ -6,23 +6,15 @@ using UnityEngine;
 
 namespace MortiseFrame.Compass {
 
-    public class PathFindingCore {
+    public static class PathFindingCore {
 
-        List<Vector2> openList;
-        List<Vector2> closedList;
-        List<Vector2> path;
-        Dictionary<Vector2, Vector2> parentMap;
-        Dictionary<Vector2, float> fMap;
+        static List<Vector2> openList = new List<Vector2>();
+        static List<Vector2> closedList = new List<Vector2>();
+        static List<Vector2> path = new List<Vector2>();
+        static Dictionary<Vector2, Vector2> parentMap = new Dictionary<Vector2, Vector2>();
+        static Dictionary<Vector2, float> fMap = new Dictionary<Vector2, float>();
 
-        public PathFindingCore() {
-            openList = new List<Vector2>();
-            closedList = new List<Vector2>();
-            path = new List<Vector2>();
-            parentMap = new Dictionary<Vector2, Vector2>();
-            fMap = new Dictionary<Vector2, float>();
-        }
-
-        public List<Vector2> FindPath(Vector2 startGrid, Vector2 endGrid, Func<int, int, bool> walkable, int mapWidth, int mapHeight, PathFindingDirection directionMode, bool cornerWalkable) {
+        public static List<Vector2> FindPath(Vector2 startGrid, Vector2 endGrid, Func<int, int, bool> walkable, int mapWidth, int mapHeight, PathFindingDirection directionMode, bool cornerWalkable) {
             // 初始化
             openList.Clear();
             closedList.Clear();
@@ -93,7 +85,7 @@ namespace MortiseFrame.Compass {
             return path;
         }
 
-        Vector2 GetMinFGrid() {
+        static Vector2 GetMinFGrid() {
             Vector2 minFGrid = openList[0];
             float minF = fMap[minFGrid];
             foreach (Vector2 point in openList) {
@@ -105,18 +97,18 @@ namespace MortiseFrame.Compass {
             return minFGrid;
         }
 
-        void CalculateF(Vector2 start, Vector2 end) {
+        static void CalculateF(Vector2 start, Vector2 end) {
             foreach (Vector2 point in openList) {
                 fMap[point] = GetF(start, end, point);
             }
         }
 
-        float GetF(Vector2 start, Vector2 end, Vector2 point) {
+        static float GetF(Vector2 start, Vector2 end, Vector2 point) {
             return GetG(start, point) + GetH(point, end);
         }
 
         // 从起始点到此点的路径长度
-        float GetG(Vector2 start, Vector2 point) {
+        static float GetG(Vector2 start, Vector2 point) {
             if (parentMap.ContainsKey(point)) {
                 return GetG(start, parentMap[point]) + 1;
             } else {
@@ -125,7 +117,7 @@ namespace MortiseFrame.Compass {
         }
 
         // 从此点到终点的直线距离
-        float GetH(Vector2 point, Vector2 end) {
+        static float GetH(Vector2 point, Vector2 end) {
             return Vector2.Distance(point, end);
         }
 
@@ -140,7 +132,7 @@ namespace MortiseFrame.Compass {
             { 1,  1}
         };
 
-        public List<Vector2> GetNeighbours(Vector2 point,
+        static List<Vector2> GetNeighbours(Vector2 point,
                                            Func<int, int, bool> walkable,
                                            int mapWidth,
                                            int mapHeight,

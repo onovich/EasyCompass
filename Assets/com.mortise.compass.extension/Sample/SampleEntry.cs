@@ -22,7 +22,6 @@ namespace MortiseFrame.Compass.Extension.Sample {
         List<Vector2> path;
         [SerializeField] bool[] map;
         [SerializeField] int mapWidth;
-        PathFindingCore pathFindingCore;
 
         void Update() {
             var axis = Vector3.zero;
@@ -42,20 +41,19 @@ namespace MortiseFrame.Compass.Extension.Sample {
             if (axis != Vector3.zero) {
                 if (path.Count > 0) {
                     MoveRole(axis, endPoint.transform);
-                    RefreshPath(pathFindingCore);
+                    RefreshPath();
                 }
                 if (path.Count > 1) {
                     var oldPos = GridUtil.GridToWorld_Center(path[0], gridGridCornerLD, gridUnit);
                     var offset = GridUtil.GridToWorld_Center(path[1], gridGridCornerLD, gridUnit) - oldPos;
                     MoveRole(offset, startPoint.transform);
-                    RefreshPath(pathFindingCore);
+                    RefreshPath();
                 }
             }
         }
 
         void MoveRole(Vector3 axis, Transform role) {
             var targetPos = role.position + axis;
-            // if (targetPos.x < gridGridCornerLD.x || targetPos.x > gridGridConderRT.x - gridUnit || targetPos.y < gridGridCornerLD.y || targetPos.y > gridGridConderRT.y - gridUnit) {
             if (targetPos.x < gridGridCornerLD.x || targetPos.x > gridGridConderRT.x || targetPos.y < gridGridCornerLD.y || targetPos.y > gridGridConderRT.y) {
                 return;
             }
@@ -63,9 +61,8 @@ namespace MortiseFrame.Compass.Extension.Sample {
         }
 
         void Start() {
-            pathFindingCore = new PathFindingCore();
             path = new List<Vector2>();
-            RefreshPath(pathFindingCore);
+            RefreshPath();
         }
 
         [ContextMenu("Bake")]
@@ -73,7 +70,7 @@ namespace MortiseFrame.Compass.Extension.Sample {
             ToasterHelper.Toast(obstacleRoot, gridGridCornerLD, gridGridConderRT, gridUnit, out map, out mapWidth);
         }
 
-        void RefreshPath(PathFindingCore pathFindingCore) {
+        void RefreshPath() {
             var start = startPoint.transform.position;
             var end = endPoint.transform.position;
 
@@ -82,7 +79,7 @@ namespace MortiseFrame.Compass.Extension.Sample {
 
             path.Clear();
             var mapHeight = MapUtil.GetMapHeight(map, mapWidth);
-            path = pathFindingCore.FindPath(startGrid, endGrid, (x, y) => {
+            path = PathFindingCore.FindPath(startGrid, endGrid, (x, y) => {
                 return MapUtil.IsMapWalkable(map, mapWidth, x, y);
             }, mapWidth, mapHeight, directionMode, cornerWalkable);
             if (path == null || path.Count == 0) {
