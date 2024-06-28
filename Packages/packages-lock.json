@@ -1,28 +1,5 @@
 {
   "dependencies": {
-    "com.mortise.knot": {
-      "version": "ssh://git@github.com/onovich/Knot.git?path=/Assets/com.mortise.knot#main",
-      "depth": 0,
-      "source": "git",
-      "dependencies": {},
-      "hash": "9ceabe5ba7e7f31b45571f02e80bacf54927f8ed"
-    },
-    "com.mortise.modifier.toaster": {
-      "version": "ssh://git@github.com/onovich/Toaster.git?path=/Assets/com.mortise.modifier.toaster#main",
-      "depth": 0,
-      "source": "git",
-      "dependencies": {},
-      "hash": "679502cf997202474bf250d8b87ad33cc2759c76"
-    },
-    "com.unity.ai.navigation": {
-      "version": "1.1.5",
-      "depth": 0,
-      "source": "registry",
-      "dependencies": {
-        "com.unity.modules.ai": "1.0.0"
-      },
-      "url": "https://packages.unity.cn"
-    },
     "com.unity.collab-proxy": {
       "version": "2.3.1",
       "depth": 0,
