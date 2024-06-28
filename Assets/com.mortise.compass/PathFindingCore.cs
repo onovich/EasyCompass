@@ -22,7 +22,7 @@ namespace MortiseFrame.Compass {
             fMap = new Dictionary<Vector2, float>();
         }
 
-        public List<Vector2> FindPath(Vector2 startGrid, Vector2 endGrid, Func<int, int, bool> walkable, int mapWidth, int mapHeight) {
+        public List<Vector2> FindPath(Vector2 startGrid, Vector2 endGrid, Func<int, int, bool> walkable, int mapWidth, int mapHeight, PathFindingDirection directionMode) {
             // 初始化
             openList.Clear();
             closedList.Clear();
@@ -61,7 +61,7 @@ namespace MortiseFrame.Compass {
                 closedList.Add(current);
 
                 // 找到当前点附近的点
-                List<Vector2> neighbours = GetNeighbours(current, walkable, mapWidth, mapHeight);
+                List<Vector2> neighbours = GetNeighbours(current, walkable, mapWidth, mapHeight, directionMode);
                 foreach (Vector2 neighbour in neighbours) {
 
                     if (closedList.Contains(neighbour)) {
@@ -129,26 +129,31 @@ namespace MortiseFrame.Compass {
             return Vector2.Distance(point, end);
         }
 
-        List<Vector2> GetNeighbours(Vector2 point, Func<int, int, bool> walkable, int mapWidth, int mapHeight) {
+        static int[,] directions = new int[,] {
+            {-1,  0},
+            { 1,  0},
+            { 0, -1},
+            { 0,  1},
+            {-1, -1},
+            {-1,  1},
+            { 1, -1},
+            { 1,  1}
+        };
+
+        public List<Vector2> GetNeighbours(Vector2 point, Func<int, int, bool> walkable, int mapWidth, int mapHeight, PathFindingDirection directionMode) {
             List<Vector2> neighbours = new List<Vector2>();
 
             int x = (int)point.x;
             int y = (int)point.y;
 
-            if (x - 1 >= 0 && walkable(x - 1, y) == true) {
-                neighbours.Add(new Vector2(x - 1, y));
-            }
+            int directionsLength = directionMode == PathFindingDirection.FourDirections ? 4 : 8;
+            for (int i = 0; i < directionsLength; i++) {
+                int newX = x + directions[i, 0];
+                int newY = y + directions[i, 1];
 
-            if (x + 1 < mapWidth && walkable(x + 1, y) == true) {
-                neighbours.Add(new Vector2(x + 1, y));
-            }
-
-            if (y - 1 >= 0 && walkable(x, y - 1) == true) {
-                neighbours.Add(new Vector2(x, y - 1));
-            }
-
-            if (y + 1 < mapHeight && walkable(x, y + 1) == true) {
-                neighbours.Add(new Vector2(x, y + 1));
+                if (newX >= 0 && newX < mapWidth && newY >= 0 && newY < mapHeight && walkable(newX, newY)) {
+                    neighbours.Add(new Vector2(newX, newY));
+                }
             }
 
             return neighbours;

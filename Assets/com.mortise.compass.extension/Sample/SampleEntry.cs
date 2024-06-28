@@ -16,6 +16,8 @@ namespace MortiseFrame.Compass.Extension.Sample {
         [SerializeField] GameObject startPoint;
         [SerializeField] GameObject endPoint;
 
+        [SerializeField] PathFindingDirection directionMode;
+
         List<Vector2> path;
         [SerializeField] bool[] map;
         [SerializeField] int mapWidth;
@@ -67,7 +69,7 @@ namespace MortiseFrame.Compass.Extension.Sample {
 
         [ContextMenu("Bake")]
         void Bake() {
-            ToasterHelper.Toast(obstacleRoot, gridGridCornerLD, gridGridConderRT, gridUnit,out map, out mapWidth);
+            ToasterHelper.Toast(obstacleRoot, gridGridCornerLD, gridGridConderRT, gridUnit, out map, out mapWidth);
         }
 
         void RefreshPath(PathFindingCore pathFindingCore) {
@@ -81,7 +83,7 @@ namespace MortiseFrame.Compass.Extension.Sample {
             var mapHeight = MapUtil.GetMapHeight(map, mapWidth);
             path = pathFindingCore.FindPath(startGrid, endGrid, (x, y) => {
                 return MapUtil.IsMapWalkable(map, mapWidth, x, y);
-            }, mapWidth, mapHeight);
+            }, mapWidth, mapHeight, directionMode);
             if (path == null || path.Count == 0) {
                 Debug.Log("No path found");
             }
