@@ -15,16 +15,15 @@ namespace MortiseFrame.Compass {
         static Dictionary<Vector2, float> fMap = new Dictionary<Vector2, float>();
         static Vector2[] neighbours = new Vector2[8];
 
-        public static List<Vector2> FindPath(Vector2 startGrid, Vector2 endGrid, Func<int, int, bool> walkable, int mapWidth, int mapHeight, PathFindingDirection directionMode, bool cornerWalkable) {
+        public static int FindPath(Vector2 startGrid, Vector2 endGrid, Func<int, int, bool> walkable, int mapWidth, int mapHeight, PathFindingDirection directionMode, bool cornerWalkable, Vector2[] path) {
             // 初始化
             openList.Clear();
             closedList.Clear();
-            path.Clear();
             parentMap.Clear();
             fMap.Clear();
 
             if (walkable((int)endGrid.x, (int)endGrid.y) == false) {
-                return path;
+                return 0;
             }
 
             // 添加起始点到openList
@@ -78,13 +77,16 @@ namespace MortiseFrame.Compass {
 
             }
             // 从目标开始回溯父节点，直到父节点==起始点
+            var index = 0;
             while (current != startGrid) {
-                path.Add(current);
+                path[index] = current;
                 current = parentMap[current];
+                index++;
             }
-            path.Add(startGrid);
-            path.Reverse();
-            return path;
+            path[index] = startGrid;
+            index++;
+            Array.Reverse(path);
+            return index;
         }
 
         static Vector2 GetMinFGrid() {

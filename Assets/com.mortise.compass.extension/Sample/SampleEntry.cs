@@ -19,9 +19,10 @@ namespace MortiseFrame.Compass.Extension.Sample {
         [SerializeField] PathFindingDirection directionMode;
         [SerializeField] bool cornerWalkable;
 
-        List<Vector2> path;
+        Vector2[] path;
         [SerializeField] bool[] map;
         [SerializeField] int mapWidth;
+        [SerializeField] int pathLenExpected = 100;
 
         void Update() {
             var axis = Vector3.zero;
@@ -39,11 +40,11 @@ namespace MortiseFrame.Compass.Extension.Sample {
             }
 
             if (axis != Vector3.zero) {
-                if (path.Count > 0) {
+                if (path.Length > 0) {
                     MoveRole(axis, endPoint.transform);
                     RefreshPath();
                 }
-                if (path.Count > 1) {
+                if (path.Length > 1) {
                     var oldPos = GridUtil.GridToWorld_Center(path[0], gridGridCornerLD, gridUnit);
                     var offset = GridUtil.GridToWorld_Center(path[1], gridGridCornerLD, gridUnit) - oldPos;
                     MoveRole(offset, startPoint.transform);
@@ -61,7 +62,7 @@ namespace MortiseFrame.Compass.Extension.Sample {
         }
 
         void Start() {
-            path = new List<Vector2>();
+            path = new Vector2[pathLenExpected];
             RefreshPath();
         }
 
@@ -77,12 +78,11 @@ namespace MortiseFrame.Compass.Extension.Sample {
             var startGrid = GridUtil.WorldToGrid(start, gridGridCornerLD, gridUnit);
             var endGrid = GridUtil.WorldToGrid(end, gridGridCornerLD, gridUnit);
 
-            path.Clear();
             var mapHeight = MapUtil.GetMapHeight(map, mapWidth);
-            path = PathFindingCore.FindPath(startGrid, endGrid, (x, y) => {
+            var pathLen = PathFindingCore.FindPath(startGrid, endGrid, (x, y) => {
                 return MapUtil.IsMapWalkable(map, mapWidth, x, y);
-            }, mapWidth, mapHeight, directionMode, cornerWalkable);
-            if (path == null || path.Count == 0) {
+            }, mapWidth, mapHeight, directionMode, cornerWalkable, path);
+            if (path == null || path.Length == 0) {
                 Debug.Log("No path found");
             }
         }
@@ -92,7 +92,7 @@ namespace MortiseFrame.Compass.Extension.Sample {
                 return;
             }
             Gizmos.color = Color.yellow;
-            for (int i = 0; i < path.Count - 1; i++) {
+            for (int i = 0; i < path.Length - 1; i++) {
                 var current = GridUtil.GridToWorld_Center(path[i], gridGridCornerLD, gridUnit);
                 var next = GridUtil.GridToWorld_Center(path[i + 1], gridGridCornerLD, gridUnit);
                 Gizmos.DrawLine(current, next);
