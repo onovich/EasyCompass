@@ -154,11 +154,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridGridCornerLD: {x: -10, y: -5}
   gridGridConderRT: {x: -3, y: -1}
-  gridUnit: 1
+  gridUnit: 1.2
   obstacleRoot: {fileID: 173215016}
   startPoint: {fileID: 1955385447}
   endPoint: {fileID: 542659935}
-  map: 01010101010101010100000001010101010100010101010101010101
+  map: 01000000010101010101000101010101010101010101010101010101
   mapWidth: 7
 --- !u!4 &84986390
 Transform:

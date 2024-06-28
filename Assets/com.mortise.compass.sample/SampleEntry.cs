@@ -24,33 +24,39 @@ namespace MortiseFrame.Compass.Sample {
         void Update() {
             var axis = Vector3.zero;
             if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W)) {
-                axis += new Vector3(0, 1, 0);
+                axis += new Vector3(0, gridUnit, 0);
             }
             if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S)) {
-                axis += new Vector3(0, -1, 0);
+                axis += new Vector3(0, -gridUnit, 0);
             }
             if (Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.A)) {
-                axis += new Vector3(-1, 0, 0);
+                axis += new Vector3(-gridUnit, 0, 0);
             }
             if (Input.GetKeyDown(KeyCode.RightArrow) || Input.GetKeyDown(KeyCode.D)) {
-                axis += new Vector3(1, 0, 0);
+                axis += new Vector3(gridUnit, 0, 0);
             }
 
-            var targetPos = endPoint.transform.position + axis;
-            if (targetPos.x < gridGridCornerLD.x || targetPos.x > gridGridConderRT.x - gridUnit || targetPos.y < gridGridCornerLD.y || targetPos.y > gridGridConderRT.y - gridUnit) {
-                return;
-            }
-
-            endPoint.transform.position = targetPos;
             if (axis != Vector3.zero) {
-                var oldPos = GridUtil.GridCenterToWorld(path[0], gridGridCornerLD, gridUnit);
-                RefreshPath(pathFindingCore);
+                if (path.Count > 0) {
+                    MoveRole(axis, endPoint.transform);
+                    RefreshPath(pathFindingCore);
+                }
                 if (path.Count > 1) {
+                    var oldPos = GridUtil.GridCenterToWorld(path[0], gridGridCornerLD, gridUnit);
                     var offset = GridUtil.GridCenterToWorld(path[1], gridGridCornerLD, gridUnit) - oldPos;
-                    startPoint.transform.position += new Vector3(offset.x, offset.y, 0);
+                    MoveRole(offset, startPoint.transform);
                     RefreshPath(pathFindingCore);
                 }
             }
+        }
+
+        void MoveRole(Vector3 axis, Transform role) {
+            var targetPos = role.position + axis;
+            // if (targetPos.x < gridGridCornerLD.x || targetPos.x > gridGridConderRT.x - gridUnit || targetPos.y < gridGridCornerLD.y || targetPos.y > gridGridConderRT.y - gridUnit) {
+            if (targetPos.x < gridGridCornerLD.x || targetPos.x > gridGridConderRT.x || targetPos.y < gridGridCornerLD.y || targetPos.y > gridGridConderRT.y) {
+                return;
+            }
+            role.position = targetPos;
         }
 
         void Start() {
