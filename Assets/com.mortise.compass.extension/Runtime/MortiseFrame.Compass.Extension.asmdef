@@ -1,5 +1,5 @@
 {
-    "name": "MortiseFrame.Compass.Toaster",
+    "name": "MortiseFrame.Compass.Extension",
     "rootNamespace": "",
     "references": [
         "GUID:986c2a652687d674d87d43e6b2a2c7ad"

@@ -1,9 +1,8 @@
 {
-    "name": "MortiseFrame.Compass.Extension.Sample",
+    "name": "MortiseFrame.Compass.Extension.Modifier",
     "rootNamespace": "",
     "references": [
         "GUID:986c2a652687d674d87d43e6b2a2c7ad",
-        "GUID:0f2d70405f3864f1ab00f836690458a0",
         "GUID:9ff28be865fd5419e971f47529488fd3"
     ],
     "includePlatforms": [],
