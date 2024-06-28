@@ -13,6 +13,7 @@ namespace MortiseFrame.Compass {
         static List<Vector2> path = new List<Vector2>();
         static Dictionary<Vector2, Vector2> parentMap = new Dictionary<Vector2, Vector2>();
         static Dictionary<Vector2, float> fMap = new Dictionary<Vector2, float>();
+        static Vector2[] neighbours = new Vector2[8];
 
         public static List<Vector2> FindPath(Vector2 startGrid, Vector2 endGrid, Func<int, int, bool> walkable, int mapWidth, int mapHeight, PathFindingDirection directionMode, bool cornerWalkable) {
             // 初始化
@@ -53,9 +54,10 @@ namespace MortiseFrame.Compass {
                 closedList.Add(current);
 
                 // 找到当前点附近的点
-                List<Vector2> neighbours = GetNeighbours(current, walkable, mapWidth, mapHeight, directionMode, cornerWalkable);
-                foreach (Vector2 neighbour in neighbours) {
+                int neighboursLen = GetNeighbours(current, walkable, mapWidth, mapHeight, directionMode, cornerWalkable);
+                for (int i = 0; i < neighboursLen; i++) {
 
+                    Vector2 neighbour = neighbours[i];
                     if (closedList.Contains(neighbour)) {
                         continue;
                     }
@@ -132,18 +134,17 @@ namespace MortiseFrame.Compass {
             { 1,  1}
         };
 
-        static List<Vector2> GetNeighbours(Vector2 point,
+        static int GetNeighbours(Vector2 point,
                                            Func<int, int, bool> walkable,
                                            int mapWidth,
                                            int mapHeight,
                                            PathFindingDirection directionMode,
                                            bool cornerWalkable) {
-            List<Vector2> neighbours = new List<Vector2>();
-
             int x = (int)point.x;
             int y = (int)point.y;
 
             int directionsLength = directionMode == PathFindingDirection.FourDirections ? 4 : 8;
+            int index = 0;
             for (int i = 0; i < directionsLength; i++) {
                 int newX = x + directions[i, 0];
                 int newY = y + directions[i, 1];
@@ -164,11 +165,11 @@ namespace MortiseFrame.Compass {
                             continue;
                         }
                     }
-                    neighbours.Add(new Vector2(newX, newY));
+                    neighbours[index] = new Vector2(newX, newY);
+                    index++;
                 }
             }
-
-            return neighbours;
+            return index;
         }
     }
 }
