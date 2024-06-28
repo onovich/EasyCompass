@@ -26,6 +26,10 @@ namespace MortiseFrame.Compass {
                 return 0;
             }
 
+            if (walkable((int)endGrid.x, (int)endGrid.y) == false) {
+                return 0;
+            }
+
             // 添加起始点到openList
             openList.Add(endGrid);
 

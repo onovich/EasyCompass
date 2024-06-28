@@ -2,21 +2,22 @@ using UnityEngine;
 
 namespace MortiseFrame.Compass.Extension {
 
-    public static class ToasterHelper {
+    public static class PathFindingBakerHelper {
 
-        public static bool Toast(Transform obstacleRoot,
+        public static bool Bake(Transform obstacleRoot,
                                  Vector2 gridCornerLD,
                                  Vector2 gridCornerRT,
                                  float gridUnit,
+                                 float epsilon,
                                  out bool[] map,
                                  out int mapWidth) {
             InitMap(gridCornerLD, gridCornerRT, gridUnit, out map, out mapWidth);
-            return BakeObstacle(obstacleRoot, gridCornerLD, gridUnit, map, mapWidth);
+            return BakeObstacle(obstacleRoot, gridCornerLD, gridUnit, epsilon, map, mapWidth);
         }
 
         static void InitMap(Vector2 gridCornerLD, Vector2 gridCornerRT, float gridUnit, out bool[] map, out int mapWidth) {
-            var gridLD = GridUtil.WorldToGrid(gridCornerLD, gridCornerLD, gridUnit);
-            var gridRT = GridUtil.WorldToGrid(gridCornerRT, gridCornerLD, gridUnit);
+            var gridLD = PathFindingGridUtil.WorldToGrid(gridCornerLD, gridCornerLD, gridUnit);
+            var gridRT = PathFindingGridUtil.WorldToGrid(gridCornerRT, gridCornerLD, gridUnit);
             var xCount = (int)(gridRT.x - gridLD.x);
             var yCount = (int)(gridRT.y - gridLD.y);
 
@@ -24,25 +25,25 @@ namespace MortiseFrame.Compass.Extension {
             mapWidth = xCount;
             for (int i = 0; i < xCount; i++) {
                 for (int j = 0; j < yCount; j++) {
-                    MapUtil.TrySetMapWalkable(map, xCount, i, j, true);
+                    PathFindingMapUtil.TrySetMapWalkable(map, xCount, i, j, true);
                 }
             }
         }
 
-        static bool BakeObstacle(Transform obstacleRoot, Vector2 gridCornerLD, float gridUnit, bool[] map, int mapWidth) {
+        static bool BakeObstacle(Transform obstacleRoot, Vector2 gridCornerLD, float gridUnit, float epsilon, bool[] map, int mapWidth) {
             if (obstacleRoot == null) {
                 return false;
             }
             var count = obstacleRoot.childCount;
             var succ = count > 0;
             for (int i = 0; i < count; i++) {
-                var child = obstacleRoot.GetChild(i).GetComponent<ObstacleEditorEntity>();
-                child.GetArea(gridUnit, gridCornerLD, (grid) => {
+                var child = obstacleRoot.GetChild(i).GetComponent<PathFindingObstacleEditorEntity>();
+                child.GetArea(gridUnit, gridCornerLD, epsilon, (grid) => {
                     if (OutOfMap(grid, map, mapWidth)) {
                         succ = false;
                         return;
                     }
-                    MapUtil.TrySetMapWalkable(map, mapWidth, (int)grid.x, (int)grid.y, false);
+                    PathFindingMapUtil.TrySetMapWalkable(map, mapWidth, (int)grid.x, (int)grid.y, false);
                 });
             }
             return succ;
@@ -51,20 +52,20 @@ namespace MortiseFrame.Compass.Extension {
         static bool OutOfMap(Vector2 grid, bool[] map, int mapWidth) {
             var xBelowZero = grid.x < 0;
             if (xBelowZero) {
-                Debug.Log("xBelowZero" + grid.x);
+                CLog.Log("xBelowZero" + grid.x);
             }
             var outOfWidth = grid.x >= mapWidth;
             if (outOfWidth) {
-                Debug.Log("outOfWidth" + grid.x + " w = " + mapWidth);
+                CLog.Log("outOfWidth" + grid.x + " w = " + mapWidth);
             }
             var yBelowZero = grid.y < 0;
             if (yBelowZero) {
-                Debug.Log("yBelowZero" + grid.y);
+                CLog.Log("yBelowZero" + grid.y);
             }
-            var mapHeight = MapUtil.GetMapHeight(map, mapWidth);
+            var mapHeight = PathFindingMapUtil.GetMapHeight(map, mapWidth);
             var outOfHeight = grid.y >= mapHeight;
             if (outOfHeight) {
-                Debug.Log("outOfHeight " + grid.y + " h = " + mapHeight);
+                CLog.Log("outOfHeight " + grid.y + " h = " + mapHeight);
             }
             var isOut = xBelowZero || outOfWidth || yBelowZero || outOfHeight;
             return isOut;

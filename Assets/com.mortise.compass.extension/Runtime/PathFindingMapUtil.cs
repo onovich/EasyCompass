@@ -2,13 +2,13 @@ using UnityEngine;
 
 namespace MortiseFrame.Compass.Extension {
 
-    public static class MapUtil {
+    public static class PathFindingMapUtil {
 
         public static bool IsMapWalkable(bool[] map, int width, int gridX, int gridY) {
             int index = GetGridIndex(width, gridX, gridY);
             var mapHeight = GetMapHeight(map, width);
             if (index < 0 || index >= map.Length) {
-                Debug.LogError("Index out of range: " + index + " map length: " + map.Length
+                CLog.LogError("Index out of range: " + index + " map length: " + map.Length
                 + " width: " + width + " height: " + mapHeight + " gridX: " + gridX + " gridY: " + gridY);
                 return false;
             }

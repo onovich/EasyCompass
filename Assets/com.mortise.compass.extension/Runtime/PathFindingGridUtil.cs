@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace MortiseFrame.Compass.Extension {
 
-    public static class GridUtil {
+    public static class PathFindingGridUtil {
 
         public static Vector2 WorldToGrid(Vector2 worldPoint,
                                           Vector2 gridCornerLD,
@@ -55,8 +55,6 @@ namespace MortiseFrame.Compass.Extension {
                     action(new Vector2(i, j));
                 }
             }
-
-
 
         }
     }
