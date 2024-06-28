@@ -36,30 +36,29 @@ namespace MortiseFrame.Compass.Extension {
             return new Vector2(x, y);
         }
 
-        public static bool IsContain(Vector2 aMin, Vector2 aMax, Vector2 bMin, Vector2 bMax) {
-            return aMin.x <= bMax.x && aMax.x >= bMin.x && aMin.y <= bMax.y && aMax.y >= bMin.y;
+        public static bool IsContain(Vector2 a, Vector2 bMin, Vector2 bMax) {
+            return a.x >= bMin.x && a.x < bMax.x && a.y >= bMin.y && a.y < bMax.y;
         }
 
         public static void SizeToGridArea(Vector2 size,
                                           Vector2 obstacleMinPos,
                                           Vector2 gridCornerLD,
                                           float gridUnit,
+                                          float epsilon,
                                           System.Action<Vector2> action) {
 
-            var obstacleMaxPos = obstacleMinPos + size;
-            for (float x = obstacleMinPos.x; x < obstacleMaxPos.x; x += gridUnit) {
-                for (float y = obstacleMinPos.y; y < obstacleMaxPos.y; y += gridUnit) {
-                    var grid = WorldToGrid(new Vector2(x, y), gridCornerLD, gridUnit);
-                    var gridMinPos = GridToWorld_LD(grid, gridCornerLD, gridUnit);
-                    var gridMaxPos = GridToWorld_RT(grid, gridCornerLD, gridUnit);
-
-                    var minPos = new Vector2(x, y);
-                    var maxPos = new Vector2(x + gridUnit, y + gridUnit);
-                    if (IsContain(minPos, maxPos, gridMinPos, gridMaxPos)) {
-                        action(grid);
-                    }
+            var obstacleMinGrid = WorldToGrid(obstacleMinPos, gridCornerLD, gridUnit);
+            var obstacleMaxPos = obstacleMinPos + size - new Vector2(epsilon, epsilon);
+            var obstacleMaxGrid = WorldToGrid(obstacleMaxPos, gridCornerLD, gridUnit);
+            for (int i = (int)obstacleMinGrid.x; i <= obstacleMaxGrid.x; i++) {
+                for (int j = (int)obstacleMinGrid.y; j <= obstacleMaxGrid.y; j++) {
+                    action(new Vector2(i, j));
                 }
             }
+
+
+
         }
     }
+
 }
